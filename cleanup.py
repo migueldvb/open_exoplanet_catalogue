@@ -2,6 +2,7 @@
 import xml.etree.ElementTree as ET
 import glob
 import os
+import time
 
 # Nicely indents the XML output
 def indent(elem, level=0):
@@ -109,6 +110,7 @@ for filename in glob.glob("systems*/*.xml"):
         continue
     finally:
         f.close()
+    
 
     # Convert units to default units
     for mass in root.findall(".//planet/mass[@unit='me']"):
@@ -144,10 +146,35 @@ for filename in glob.glob("systems*/*.xml"):
                     uniquetags.append(child.tag)
 	
 
-
-    # Cleanup XML
+    # Cleanup XML and write to file. 
+    # This is only to find out if anything has been modified.
     removeemptytags(root)
     indent(root)
-
-    # Write XML to file.
     ET.ElementTree(root).write(filename)
+
+    # find last update and check for uncommited changes 
+    lastupdate = os.popen("git log -1 --format=%ad --date=short \'"+filename+"\'").readlines()
+    modifiedjustnow = os.popen("git diff --stat \'"+filename+"\'").readlines()
+    try:
+        lastupdate = lastupdate[0].strip().replace("-","/")[2:]
+        if len(modifiedjustnow):
+            print "File \""+filename+"\" contains uncommited changes."
+            lastupdate = time.strftime("%y/%m/%d") 
+    except:
+        lastupdate = time.strftime("%y/%m/%d") 
+        print "Cannot find modification date for file \""+filename+"\". Using today's date: \""+lastupdate+"\"."
+    
+    for planet in planets:
+        lastupdatetag = planet.find("./lastupdate")
+	if lastupdatetag is not None:
+            lastupdatetag.text = lastupdate
+        else:
+            ET.SubElement(planet,"lastupdate").text = lastupdate
+  
+    # Cleanup XML and write to file again 
+    # This time with a modified date 
+    removeemptytags(root)
+    indent(root)
+    ET.ElementTree(root).write(filename)
+
+
