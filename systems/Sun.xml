@@ -73,6 +73,18 @@
 			<lastupdate>12/01/01</lastupdate>
 		</planet>
 		<planet>
+			<name>Ceres</name>
+			<mass>0.00000049495133</mass>
+			<radius>0.013940582</radius>
+			<semimajoraxis>2.76681893</semimajoraxis>
+			<eccentricity>0.07951174</eccentricity>
+			<inclination>10.586094</inclination>
+			<periastron>72.932925</periastron>
+			<ascendingnode>80.40642</ascendingnode>
+			<longitude>323.097338</longitude>
+			<temperature>167</temperature>
+		</planet>
+		<planet>
 			<name>Jupiter</name>
 			<name>Sun f</name>
 			<list>Solar System</list>
